@@ -114,13 +114,13 @@ void LIDARLite::configure(int configuration, char lidarliteAddress)
     case 4: // High sensitivity detection, high erroneous measurements
       write(0x02,0x80,lidarliteAddress); // Default
       write(0x04,0x08,lidarliteAddress); // Default
-      write(0x1c,0x20,lidarliteAddress);
+      write(0x1c,0x80,lidarliteAddress);
     break;
 
-    case 5: // Low sensitivity detection, low erroneous measurementss
+    case 5: // Low sensitivity detection, low erroneous measurements
       write(0x02,0x80,lidarliteAddress); // Default
       write(0x04,0x08,lidarliteAddress); // Default
-      write(0x1c,0x60,lidarliteAddress);
+      write(0x1c,0xb0,lidarliteAddress);
     break;
   }
 } /* LIDARLite::configure */
@@ -296,7 +296,7 @@ void LIDARLite::read(char myAddress, int numOfBytes, byte arrayToSave[2], bool m
   {
     bailout:
       busyCounter = 0;
-      Serial.println("> Bailout");
+      Serial.println("> read failed");
   }
 } /* LIDARLite::read */
 

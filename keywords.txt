@@ -1,0 +1,27 @@
+#######################################
+# Syntax Coloring Map
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+LIDARLite	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+begin	KEYWORD2
+configure	KEYWORD2
+reset	KEYWORD2
+distance	KEYWORD2
+write	KEYWORD2
+read	KEYWORD2
+correlationRecordToSerial	KEYWORD2
+
+######################################
+# Constants (LITERAL1)
+#######################################
+
+LIDARLITE_ADDR_DEFAULT	LITERAL1
