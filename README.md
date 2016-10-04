@@ -9,7 +9,7 @@ platform with a template for their own application code.
 
 For detailed specifications, pinout, and connection diagrams, see the manual linked above.
 
-***A Note on Compatibility:*** *Minor interface changes have occurred between LIDAR-Lite v3 and previous versions. Backwards-compatibility of this library is largely preserved, but support is not provided nor functionality guaranteed.*
+***A Note on Compatibility:*** *Minor interface changes have occurred between LIDAR-Lite v3 and previous versions. Backwards-compatibility of this library is largely preserved, but support is not directly provided for v1 and v2.*
 
 ## Installation instructions
 [This tutorial from Sparkfun](https://learn.sparkfun.com/tutorials/installing-an-arduino-library) describes how to install and use an Arduino Library.
