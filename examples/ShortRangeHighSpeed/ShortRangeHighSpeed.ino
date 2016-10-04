@@ -14,10 +14,11 @@
   LIDAR-Lite I2C SCL (green) to Arduino SCL
   LIDAR-Lite I2C SDA (blue) to Arduino SDA
   LIDAR-Lite Ground (black) to Arduino GND
-  
+
+  (Capacitor recommended to mitigate inrush current when device is enabled)
   680uF capacitor (+) to Arduino 5v
   680uF capacitor (-) to Arduino GND
-  
+
   See the Operation Manual for wiring diagrams and more information:
   http://static.garmin.com/pumac/LIDAR_Lite_v3_Operation_Manual_and_Technical_Specifications.pdf
 
@@ -34,9 +35,9 @@ void setup()
 
   /*
     begin(int configuration, bool fasti2c, char lidarliteAddress)
-  
+
     Starts the sensor and I2C.
-  
+
     Parameters
     ----------------------------------------------------------------------------
     configuration: Default 0. Selects one of several preset configurations.
@@ -49,9 +50,9 @@ void setup()
 
   /*
     Write
-  
+
     Perform I2C write to device.
-  
+
     Parameters
     ----------------------------------------------------------------------------
     myAddress: register address to write to.
@@ -76,7 +77,7 @@ void loop()
   }
 }
 
-// Read distance. The approach is to poll the status register until the device goes 
+// Read distance. The approach is to poll the status register until the device goes
 // idle after finishing a measurement, send a new measurement command, then read the
 // previous distance data while it is performing the new command.
 int distanceFast(bool biasCorrection)
@@ -102,8 +103,8 @@ int distanceFast(bool biasCorrection)
     {
       break;
     }
-  } 
-  
+  }
+
   // Send measurement command
   Wire.beginTransmission(LIDARLITE_ADDR_DEFAULT);
   Wire.write(0X00); // Prepare write to register 0x00
@@ -116,7 +117,7 @@ int distanceFast(bool biasCorrection)
     Wire.write(0X03); // Perform measurement without receiver bias correction
   }
   Wire.endTransmission();
-  
+
   // Immediately read previous distance measurement data. This is valid until the next measurement finishes.
   // The I2C transaction finishes before new distance measurement data is acquired.
   // Prepare 2 byte read from registers 0x0f and 0x10
@@ -128,9 +129,8 @@ int distanceFast(bool biasCorrection)
   Wire.requestFrom(LIDARLITE_ADDR_DEFAULT, 2);
   distance = Wire.read();
   distance <<= 8;
-  distance |= Wire.read();  
-  
+  distance |= Wire.read();
+
   // Return the measured distance
   return distance;
 }
-

@@ -12,10 +12,10 @@
   LIDAR-Lite I2C SDA (blue) to Arduino SDA
   LIDAR-Lite Ground (black) to Arduino GND
   
-  (Capacitor recommended for stability during fast operation)
+  (Capacitor recommended to mitigate inrush current when device is enabled)
   680uF capacitor (+) to Arduino 5v
   680uF capacitor (-) to Arduino GND
-  
+
   See the Operation Manual for wiring diagrams and more information:
   http://static.garmin.com/pumac/LIDAR_Lite_v3_Operation_Manual_and_Technical_Specifications.pdf
 
@@ -32,9 +32,9 @@ void setup()
 
   /*
     begin(int configuration, bool fasti2c, char lidarliteAddress)
-  
+
     Starts the sensor and I2C.
-  
+
     Parameters
     ----------------------------------------------------------------------------
     configuration: Default 0. Selects one of several preset configurations.
@@ -47,9 +47,9 @@ void setup()
 
   /*
     configure(int configuration, char lidarliteAddress)
-  
+
     Selects one of several preset configurations.
-  
+
     Parameters
     ----------------------------------------------------------------------------
     configuration:  Default 0.
@@ -73,9 +73,9 @@ void loop()
 {
   /*
     distance(bool biasCorrection, char lidarliteAddress)
-  
+
     Take a distance measurement and read the result.
-  
+
     Parameters
     ----------------------------------------------------------------------------
     biasCorrection: Default true. Take aquisition with receiver bias
@@ -95,4 +95,3 @@ void loop()
     Serial.println(myLidarLite.distance(false));
   }
 }
-
