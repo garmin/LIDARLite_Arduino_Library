@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 
   LIDARLite Arduino Library
-  GetDistancePwm
+  v3/GetDistancePwm
 
   This example shows how to read distance from a LIDAR-Lite connected over the
   PWM interface.

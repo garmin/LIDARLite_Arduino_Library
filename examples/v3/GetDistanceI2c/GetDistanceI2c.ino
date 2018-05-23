@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 
   LIDARLite Arduino Library
-  GetDistanceI2c
+  v3/GetDistanceI2c
 
   This example shows how to initialize, configure, and read distance from a
   LIDAR-Lite connected over the I2C interface.
@@ -11,7 +11,7 @@
   LIDAR-Lite I2C SCL (green) to Arduino SCL
   LIDAR-Lite I2C SDA (blue) to Arduino SDA
   LIDAR-Lite Ground (black) to Arduino GND
-  
+
   (Capacitor recommended to mitigate inrush current when device is enabled)
   680uF capacitor (+) to Arduino 5v
   680uF capacitor (-) to Arduino GND

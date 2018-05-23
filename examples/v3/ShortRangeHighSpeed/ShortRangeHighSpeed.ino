@@ -1,7 +1,7 @@
 /*------------------------------------------------------------------------------
 
   LIDARLite Arduino Library
-  ShortRangeHighSpeed
+  v3/ShortRangeHighSpeed
 
   This example shows a method for running the LIDAR-Lite at high speeds for
   short range operation. It uses an different approach than the default
