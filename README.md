@@ -1,9 +1,7 @@
 # LIDAR-Lite Arduino Library
 
-* [Product Page: LIDAR-Lite v3](https://buy.garmin.com/en-US/US/p/557294)
-* [Product Page: LIDAR-Lite v3HP](https://buy.garmin.com/en-US/US/p/578152)
-
-* See Product Pages for operating manuals
+* [Product Page: LIDAR-Lite v3](https://buy.garmin.com/en-US/US/p/557294) - See product page for operating manual
+* [Product Page: LIDAR-Lite v3HP](https://buy.garmin.com/en-US/US/p/578152) - See product page for operating manual
 
 This library provides quick access to basic functions of LIDAR-Lite
 via the Arduino interface. Additionally, it can provide a user of any
@@ -11,7 +9,7 @@ platform with a template for their own application code.
 
 For detailed specifications, pinout, and connection diagrams, see the manuals linked at the above product pages.
 
-***A Note on Compatibility:*** *Minor interface changes have occurred between LIDAR-Lite v3, v3HP, and previous versions. Backwards-compatibility of this library is largely preserved, but support is not directly provided for v1 and v2.*
+***A Note on Compatibility:*** *Minor interface changes have occurred between LIDAR-Lite v3, v3HP, and previous versions. Backwards-compatibility of this library is largely preserved, though support is not directly provided for v1 and v2.*
 
 ## Installation instructions
 To install, download this repository and place in your Arduino libraries folder or use the Arduino Library Manager. If you need help, follow the instructions here: [http://arduino.cc/en/Guide/Libraries](http://arduino.cc/en/Guide/Libraries).
