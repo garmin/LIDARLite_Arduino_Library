@@ -191,7 +191,7 @@ void LIDARLite_v3HP::waitForBusy(uint8_t lidarliteAddress)
         }
 
         // Read status register to check busy flag
-        read(0x01, &dataByte, 1);
+        read(0x01, &dataByte, 1, lidarliteAddress);
 
         // STATUS bit 0 is busyFlag
         busyFlag = dataByte & 0x01;
@@ -361,7 +361,6 @@ void LIDARLite_v3HP::correlationRecordToSerial(
     uint16_t numberOfReadings, uint8_t lidarliteAddress)
 {
     uint16_t  i = 0;
-    uint16_t  j = 0;
     uint8_t   dataBytes[32];         // Array to store read / write data
     int16_t   correlationValue = 0;  // Var to store value of correlation record
 
@@ -371,14 +370,14 @@ void LIDARLite_v3HP::correlationRecordToSerial(
 
     for (i=0 ; i<numberOfReadings ; i++)
     {
-        read(0x52, dataBytes, (4), lidarliteAddress);
+        read(0x52, dataBytes, 2, lidarliteAddress);
 
         //  Low byte is the value of the correlation record
-        correlationValue = (uint16_t) dataBytes[j*2];
+        correlationValue = (uint16_t) dataBytes[0];
 
         // if upper byte lsb is one, the value is negative
         // so here we test to artifically sign extend the data
-        if ( (int) dataBytes[(j*2) + 1] == 1)
+        if ( (int) dataBytes[1] == 1)
         {
             correlationValue |= 0xff00;
         }
