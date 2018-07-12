@@ -66,6 +66,7 @@ void setup()
 void loop()
 {
     uint16_t distance;
+    uint8_t  newDistance = 0;
     uint8_t  c;
     rangeType_T range = RANGE_NONE;
 
@@ -126,26 +127,30 @@ void loop()
         switch (range)
         {
             case RANGE_NONE:
-                // do nothing
+                newDistance = 0;
                 break;
 
             case RANGE_SINGLE:
-                distance = distanceSingle();
+                newDistance = distanceSingle(&distance);
                 break;
 
             case RANGE_CONTINUOUS:
-                distance = distanceFast();
+                newDistance = distanceContinuous(&distance);
                 break;
 
             case RANGE_TIMER:
                 delay(250); // 4 Hz
-                distance = distanceFast();
+                newDistance = distanceFast(&distance);
+                break;
+
+            default:
+                newDistance = 0;
                 break;
         }
 
-        // When there is an active range being taken, print measured
+        // When there is new range data, print measured
         // distance to the serial port
-        if (range != RANGE_NONE)
+        if (newDistance)
         {
             Serial.println(distance);
         }
@@ -165,10 +170,8 @@ void loop()
 // blocking function as it will not return until a range has been
 // taken and a new distance measurement can be read.
 //---------------------------------------------------------------------
-uint16_t distanceSingle()
+uint8_t distanceSingle(uint16_t * distance)
 {
-    uint16_t distance;
-
     // 1. Wait for busyFlag to indicate device is idle. This must be
     //    done before triggering a range measurement.
     myLidarLite.waitForBusy();
@@ -181,9 +184,41 @@ uint16_t distanceSingle()
     myLidarLite.waitForBusy();
 
     // 4. Read new distance data from device registers
-    distance = myLidarLite.readDistance();
+    *distance = myLidarLite.readDistance();
 
-    return distance;
+    return 1;
+}
+
+//---------------------------------------------------------------------
+// Read Continuous Distance Measurements
+//
+// The most recent distance measurement can always be read from
+// device registers. Polling for the BUSY flag in the STATUS
+// register can alert the user that the distance measurement is new
+// and that the next measurement can be initiated. If the device is
+// BUSY this function does nothing and returns 0. If the device is
+// NOT BUSY this function triggers the next measurement, reads the
+// distance data from the previous measurement, and returns 1.
+//---------------------------------------------------------------------
+uint8_t distanceContinuous(uint16_t * distance)
+{
+    uint8_t newDistance = 0;
+
+    // Check on busyFlag to indicate if device is idle
+    // (meaning = it finished the previously triggered measurement)
+    if (myLidarLite.getBusyFlag() == 0)
+    {
+        // Trigger the next range measurement
+        myLidarLite.takeRange();
+
+        // Read new distance data from device registers
+        *distance = myLidarLite.readDistance();
+
+        // Report to calling function that we have new data
+        newDistance = 1;
+    }
+
+    return newDistance;
 }
 
 //---------------------------------------------------------------------
@@ -193,10 +228,8 @@ uint16_t distanceSingle()
 // idle after finishing a measurement, send a new measurement command, then read the
 // previous distance data while it is performing the new command.
 //---------------------------------------------------------------------
-uint16_t distanceFast(void)
+uint8_t distanceFast(uint16_t * distance)
 {
-    uint16_t distance;
-
     // 1. Wait for busyFlag to indicate device is idle. This must be
     //    done before triggering a range measurement.
     myLidarLite.waitForBusy();
@@ -210,9 +243,9 @@ uint16_t distanceFast(void)
     //    ongoing. This distance data is valid until the next
     //    measurement finishes. The I2C transaction finishes before new
     //    distance measurement data is acquired.
-    distance = myLidarLite.readDistance();
+    *distance = myLidarLite.readDistance();
 
-    return distance;
+    return 1;
 }
 
 //---------------------------------------------------------------------
