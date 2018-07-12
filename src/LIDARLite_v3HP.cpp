@@ -190,11 +190,7 @@ void LIDARLite_v3HP::waitForBusy(uint8_t lidarliteAddress)
             break;
         }
 
-        // Read status register to check busy flag
-        read(0x01, &dataByte, 1, lidarliteAddress);
-
-        // STATUS bit 0 is busyFlag
-        busyFlag = dataByte & 0x01;
+        busyFlag = getBusyFlag(lidarliteAddress);
 
         // Increment busyCounter for timeout
         busyCounter++;
@@ -206,6 +202,29 @@ void LIDARLite_v3HP::waitForBusy(uint8_t lidarliteAddress)
         Serial.println("> bailing out of waitForBusy()");
     }
 } /* LIDARLite_v3HP::waitForBusy */
+
+/*------------------------------------------------------------------------------
+  Get Busy Flag
+
+  Read BUSY flag from device registers. Function will return 0x00 if not busy.
+
+  Parameters
+  ------------------------------------------------------------------------------
+  lidarliteAddress: Default 0x62. Fill in new address here if changed. See
+    operating manual for instructions.
+------------------------------------------------------------------------------*/
+uint8_t LIDARLite_v3HP::getBusyFlag(uint8_t lidarliteAddress)
+{
+    uint8_t  busyFlag; // busyFlag monitors when the device is done with a measurement
+
+    // Read status register to check busy flag
+    read(0x01, &busyFlag, 1, lidarliteAddress);
+
+    // STATUS bit 0 is busyFlag
+    busyFlag &= 0x01;
+
+    return busyFlag;
+} /* LIDARLite_v3HP::getBusyFlag */
 
 /*------------------------------------------------------------------------------
   Read Distance
