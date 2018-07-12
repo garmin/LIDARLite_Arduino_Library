@@ -35,6 +35,7 @@ class LIDARLite_v3HP
   public:
       void      configure   (uint8_t configuration = 0, uint8_t lidarliteAddress = LIDARLITE_ADDR_DEFAULT);
 
+      void      setI2Caddr  (uint8_t newAddress, uint8_t disableDefault, uint8_t lidarliteAddress = LIDARLITE_ADDR_DEFAULT);
       uint16_t  readDistance(uint8_t lidarliteAddress = LIDARLITE_ADDR_DEFAULT);
       void      waitForBusy (uint8_t lidarliteAddress = LIDARLITE_ADDR_DEFAULT);
       void      takeRange   (uint8_t lidarliteAddress = LIDARLITE_ADDR_DEFAULT);

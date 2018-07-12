@@ -109,6 +109,47 @@ void LIDARLite_v3HP::configure(uint8_t configuration, uint8_t lidarliteAddress)
 } /* LIDARLite_v3HP::configure */
 
 /*------------------------------------------------------------------------------
+  Set I2C Address
+
+  Set Alternate I2C Device Address. See Operation Manual for additional info.
+
+  Parameters
+  ------------------------------------------------------------------------------
+  newAddress: desired secondary I2C device address
+  disableDefault: a non-zero value here means the default 0x62 I2C device
+    address will be disabled.
+  lidarliteAddress: Default 0x62. Fill in new address here if changed. See
+    operating manual for instructions.
+------------------------------------------------------------------------------*/
+void LIDARLite_v3HP::setI2Caddr (uint8_t newAddress, uint8_t disableDefault,
+                                 uint8_t lidarliteAddress)
+{
+    uint8_t dataBytes[2];
+
+    // Read UNIT_ID serial number bytes and write them into I2C_ID byte locations
+    read (0x16, dataBytes, 2, lidarliteAddress);
+    write(0x18, dataBytes, 2, lidarliteAddress);
+
+    // Write the new I2C device address to registers
+    // left shift by one to work around data alignment issue in v3HP
+    dataBytes[0] = (newAddress << 1);
+    write(0x1a, dataBytes, 1, lidarliteAddress);
+
+    // Enable the new I2C device address using the default I2C device address
+    read (0x1e, dataBytes, 1, lidarliteAddress);
+    dataBytes[0] = dataBytes[0] | (1 << 4); // set bit to enable the new address
+    write(0x1e, dataBytes, 1, lidarliteAddress);
+
+    // If desired, disable default I2C device address (using the new I2C device address)
+    if (disableDefault)
+    {
+        read (0x1e, dataBytes, 1, newAddress);
+        dataBytes[0] = dataBytes[0] | (1 << 3); // set bit to disable default address
+        write(0x1e, dataBytes, 1, newAddress);
+    }
+} /* LIDARLite_v3HP::setI2Caddr */
+
+/*------------------------------------------------------------------------------
   Take Range
 
   Initiate a distance measurement by writing to register 0x00.
