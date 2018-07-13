@@ -25,7 +25,7 @@
 
 #include <stdint.h>
 #include <Wire.h>
-#include "LIDARLite_v3HP.h"
+#include <LIDARLite_v3HP.h>
 
 LIDARLite_v3HP myLidarLite;
 
@@ -68,7 +68,7 @@ void loop()
     uint16_t distance;
     uint8_t  newDistance = 0;
     uint8_t  c;
-    rangeType_T range = RANGE_NONE;
+    rangeType_T rangeMode = RANGE_NONE;
 
     // Continuous loop
     while (1)
@@ -84,26 +84,26 @@ void loop()
             {
                 case 'S':
                 case 's':
-                    range = RANGE_SINGLE;
+                    rangeMode = RANGE_SINGLE;
                     break;
 
                 case 'C':
                 case 'c':
-                    range = RANGE_CONTINUOUS;
+                    rangeMode = RANGE_CONTINUOUS;
                     break;
 
                 case 'T':
                 case 't':
-                    range = RANGE_TIMER;
+                    rangeMode = RANGE_TIMER;
                     break;
 
                 case '.':
-                    range = RANGE_NONE;
+                    rangeMode = RANGE_NONE;
                     break;
 
                 case 'D':
                 case 'd':
-                    range = RANGE_NONE;
+                    rangeMode = RANGE_NONE;
                     dumpCorrelationRecord();
                     break;
 
@@ -124,7 +124,7 @@ void loop()
             }
         }
 
-        switch (range)
+        switch (rangeMode)
         {
             case RANGE_NONE:
                 newDistance = 0;
@@ -148,17 +148,16 @@ void loop()
                 break;
         }
 
-        // When there is new range data, print measured
-        // distance to the serial port
+        // When there is new distance data, print it to the serial port
         if (newDistance)
         {
             Serial.println(distance);
         }
 
         // Single measurements print once and then stop
-        if (range == RANGE_SINGLE)
+        if (rangeMode == RANGE_SINGLE)
         {
-            range = RANGE_NONE;
+            rangeMode = RANGE_NONE;
         }
     }
 }
