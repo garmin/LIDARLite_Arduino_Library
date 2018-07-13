@@ -28,6 +28,7 @@ This example shows a method to run LIDAR-Lite at high speed for short range appl
 This example shows various methods to run LIDAR-Lite v3HP.
 
 ## Version History
+* [2.0.1](https://github.com/garmin/LIDARLite_Arduino_Library/tree/2.0.1) - Updates to v3HP library
 * [2.0.0](https://github.com/garmin/LIDARLite_Arduino_Library/tree/2.0.0) - Support for LIDAR-Lite v3HP
 * [1.0.3](https://github.com/garmin/LIDARLite_Arduino_Library/tree/1.0.3) - Fix version convention
 * [1.0.2](https://github.com/garmin/LIDARLite_Arduino_Library/tree/v1.0.2) - Library Manager Update
