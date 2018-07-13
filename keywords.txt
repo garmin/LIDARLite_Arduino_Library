@@ -6,27 +6,29 @@
 # Datatypes (KEYWORD1)
 #######################################
 
-LIDARLite       KEYWORD1
-LIDARLite_v3HP  KEYWORD1
+LIDARLite	KEYWORD1
+LIDARLite_v3HP	KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)
 #######################################
 
-begin      KEYWORD2
-configure  KEYWORD2
-reset      KEYWORD2
-distance   KEYWORD2
-write      KEYWORD2
-read       KEYWORD2
-correlationRecordToSerial       KEYWORD2
+begin		KEYWORD2
+configure	KEYWORD2
+reset		KEYWORD2
+distance	KEYWORD2
+write		KEYWORD2
+read		KEYWORD2
+correlationRecordToSerial	KEYWORD2
 
-readDistance  KEYWORD2
-waitForBusy   KEYWORD2
-takeRange     KEYWORD2
+setI2Caddr	KEYWORD2
+readDistance	KEYWORD2
+waitForBusy	KEYWORD2
+getBusyFlag	KEYWORD2
+takeRange	KEYWORD2
 
 ######################################
 # Constants (LITERAL1)
 #######################################
 
-LIDARLITE_ADDR_DEFAULT  LITERAL1
+LIDARLITE_ADDR_DEFAULT	LITERAL1
