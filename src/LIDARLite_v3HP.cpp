@@ -180,7 +180,6 @@ void LIDARLite_v3HP::waitForBusy(uint8_t lidarliteAddress)
 {
     uint16_t busyCounter = 0; // busyCounter counts number of times busy flag is checked, for timeout
     uint8_t  busyFlag    = 1; // busyFlag monitors when the device is done with a measurement
-    uint8_t  dataByte;
 
     while (busyFlag)      // Loop until device is not busy
     {
@@ -380,7 +379,7 @@ void LIDARLite_v3HP::correlationRecordToSerial(
     uint16_t numberOfReadings, uint8_t lidarliteAddress)
 {
     uint16_t  i = 0;
-    uint8_t   dataBytes[32];         // Array to store read / write data
+    uint8_t   dataBytes[2];          // Array to store read / write data
     int16_t   correlationValue = 0;  // Var to store value of correlation record
 
     // Test mode enable
