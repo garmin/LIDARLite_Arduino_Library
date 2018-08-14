@@ -100,6 +100,13 @@ void LIDARLite_v3HP::configure(uint8_t configuration, uint8_t lidarliteAddress)
             refCountMax     = 0x05; // Default
             thresholdBypass = 0xb0;
             break;
+
+        case 6: // Short range, high speed, higher error
+            sigCountMax     = 0x04;
+            acqConfigReg    = 0x08 | 0x01; // mode pin = status output mode
+            refCountMax     = 0x03;
+            thresholdBypass = 0x00;
+            break;
     }
 
     write(0x02, &sigCountMax    , 1, lidarliteAddress);
