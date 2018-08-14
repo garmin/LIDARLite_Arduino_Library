@@ -1,15 +1,15 @@
 /*------------------------------------------------------------------------------
 
   LIDARLite Arduino Library
-  v3HP/v3HP_I2C
+  v3HP/v3HP_MONITOR
 
   This example shows a method for running the LIDAR-Lite v3 HP while monitoring
   busy status via the MODE pin on the device. Using the MODE pin and the
   selected configuration, this example illustrates a higher speed implementation
   that can be used for shorter distances.
 
-  Open a serial terminal program
-  (or the Serial Monitor in the Arduino IDE) to view distance measurements.
+  Open a serial terminal program (or the Serial Monitor in the Arduino IDE)
+  to view distance measurements.
 
   Connections:
   LIDAR-Lite 5 Vdc (red) to Arduino 5v
