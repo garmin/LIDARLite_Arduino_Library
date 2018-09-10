@@ -103,7 +103,7 @@ void LIDARLite_v3HP::configure(uint8_t configuration, uint8_t lidarliteAddress)
 
         case 6: // Short range, high speed, higher error
             sigCountMax     = 0x04;
-            acqConfigReg    = 0x08 | 0x01; // mode pin = status output mode
+            acqConfigReg    = 0x01; // turn off short_sig, mode pin = status output mode
             refCountMax     = 0x03;
             thresholdBypass = 0x00;
             break;
