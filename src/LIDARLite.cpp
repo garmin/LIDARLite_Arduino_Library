@@ -126,6 +126,44 @@ void LIDARLite::configure(int configuration, char lidarliteAddress)
 } /* LIDARLite::configure */
 
 /*------------------------------------------------------------------------------
+  Set I2C Address
+
+  Set Alternate I2C Device Address. See Operation Manual for additional info.
+
+  Parameters
+  ------------------------------------------------------------------------------
+  newAddress: desired secondary I2C device address
+  disableDefault: a non-zero value here means the default 0x62 I2C device
+    address will be disabled.
+  lidarliteAddress: Default 0x62. Fill in new address here if changed. See
+    operating manual for instructions.
+------------------------------------------------------------------------------*/
+void LIDARLite::setI2Caddr(char newAddress, char disableDefault, char lidarliteAddress)
+{
+  byte dataBytes[2];
+
+  // Read UNIT_ID serial number bytes and write them into I2C_ID byte locations
+  read ((0x16 | 0x80), 2, dataBytes, false, lidarliteAddress);
+  write(0x18, dataBytes[0], lidarliteAddress);
+  write(0x19, dataBytes[1], lidarliteAddress);
+
+  // Write the new I2C device address to registers
+  dataBytes[0] = newAddress;
+  write(0x1a, dataBytes[0], lidarliteAddress);
+
+  // Enable the new I2C device address using the default I2C device address
+  dataBytes[0] = 0;
+  write(0x1e, dataBytes[0], lidarliteAddress);
+
+  // If desired, disable default I2C device address (using the new I2C device address)
+  if (disableDefault)
+  {
+    dataBytes[0] = (1 << 3); // set bit to disable default address
+    write(0x1e, dataBytes[0], newAddress);
+  }
+} /* LIDARLite::setI2Caddr */
+
+/*------------------------------------------------------------------------------
   Reset
 
   Reset device. The device reloads default register settings, including the
