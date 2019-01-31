@@ -41,8 +41,6 @@ enum rangeType_T
 
 void setup()
 {
-    uint8_t dataByte;
-
     // Initialize Arduino serial port (for display of ASCII output to PC)
     Serial.begin(115200);
 
