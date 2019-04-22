@@ -41,6 +41,9 @@ Use the MODE pin to monitor STATUS of the LIDAR-Lite v3HP.
 * [1.0.1](https://github.com/garmin/LIDARLite_Arduino_Library/tree/v1.0.1) - Release to Library Manager
 * [1.0.0](https://github.com/garmin/LIDARLite_Arduino_Library/tree/1.0.0) - Initial release
 
+## Raspberry Pi Library for LIDAR-Lite v3
+* [LIDAR-Lite v3 on Pi](https://github.com/garmin/LIDARLite_RaspberryPi_Library/) - Basic support available for Raspberry Pi 3B+
+
 ## License
 Copyright (c) 2018 Garmin Ltd. or its subsidiaries. Distributed under the Apache 2.0 License.
 See [LICENSE](LICENSE) for further details.
