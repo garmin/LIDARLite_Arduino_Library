@@ -31,6 +31,7 @@ This example shows various methods to run LIDAR-Lite v3HP.
 Use the MODE pin to monitor STATUS of the LIDAR-Lite v3HP.
 
 ## Version History
+* [2.0.6](https://github.com/garmin/LIDARLite_Arduino_Library/tree/2.0.6) - Add v3HP library function to reset the reference filter
 * [2.0.5](https://github.com/garmin/LIDARLite_Arduino_Library/tree/2.0.5) - Add v3 library function to set alternate I2C addr
 * [2.0.4](https://github.com/garmin/LIDARLite_Arduino_Library/tree/2.0.4) - Update short-range, high-error configuration
 * [2.0.3](https://github.com/garmin/LIDARLite_Arduino_Library/tree/2.0.3) - New example using MODE pin for STATUS output of v3HP
