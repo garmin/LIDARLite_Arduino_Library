@@ -263,6 +263,63 @@ uint16_t LIDARLite_v3HP::readDistance(uint8_t lidarliteAddress)
 } /* LIDARLite_v3HP::readDistance */
 
 /*------------------------------------------------------------------------------
+  Reset Reference Filter
+
+  In some scenarios, power-on transients in the LIDAR-Lite v3HP can result in
+  initial measurements that may be a few centimeters short of actual distance.
+  This symptom will eventually rectify itself after a few hundred measurements.
+  This symptom can also be rectified more quickly by resetting the unit's internal
+  reference filter. The process here illustrates how to disable the internal
+  reference filter, trigger a measurement (forcing re-init of the reference
+  filter), and then re-enable the filter.
+
+  Process
+  ------------------------------------------------------------------------------
+  1.  Disable the LIDAR-Lite reference filter
+  2.  Set reference integration count to max
+  3.  Trigger a measurement
+  4.  Restore reference integration count
+  5.  Re-enable reference filter
+
+  Parameters
+  ------------------------------------------------------------------------------
+  lidarliteAddress: Default 0x62. Fill in new address here if changed. See
+    operating manual for instructions.
+------------------------------------------------------------------------------*/
+void LIDARLite_v3HP::resetReferenceFilter(uint8_t lidarliteAddress)
+{
+    uint8_t dataBytes[2];
+    uint8_t acqConfigReg;
+    uint8_t refCountMax;
+
+    // Set bit 4 of the acquisition configuration register (disable reference filter)
+    read(0x04, dataBytes, 1, lidarliteAddress);  // Read address 0x04 (acquisition config register)
+    acqConfigReg = dataBytes[0];                 // store for later restoration
+    dataBytes[0] = dataBytes[0] | 0x10;          // turn on disable of ref filter
+    write(0x04, dataBytes, 1, lidarliteAddress); // write it back
+
+    // Set reference integration count to max
+    read(0x12, dataBytes, 1, lidarliteAddress);  // Read address 0x12 (ref integration count)
+    refCountMax = dataBytes[0];                  // store for later restoration
+    dataBytes[0] = 0xff;                         // we want to reference to overflow quickly
+    write(0x12, dataBytes, 1, lidarliteAddress); // write ref integration count
+
+    // Trigger a measurement
+    waitForBusy(lidarliteAddress);
+    takeRange(lidarliteAddress);
+    waitForBusy(lidarliteAddress);
+    // ... no need to read the distance, it is immaterial
+
+    // Restore previous reference integration count
+    dataBytes[0] = refCountMax;
+    write(0x12, dataBytes, 1, lidarliteAddress);
+
+    // Restore previous acquisition configuration register (re-enabling reference filter)
+    dataBytes[0] = acqConfigReg;
+    write(0x04, dataBytes, 1, lidarliteAddress);
+} /* LIDARLite_v3HP::resetReferenceFilter */
+
+/*------------------------------------------------------------------------------
   Write
 
   Perform I2C write to device. The I2C peripheral in the LidarLite v3 HP
