@@ -192,6 +192,65 @@ uint8_t LIDARLite_v4LED::getBusyFlag(uint8_t lidarliteAddress)
 } /* LIDARLite_v4LED::getBusyFlag */
 
 /*------------------------------------------------------------------------------
+  Take Range using Trigger / Monitor Pins
+
+  Initiate a distance measurement by toggling the trigger pin
+
+  Parameters
+  ------------------------------------------------------------------------------
+  triggerPin: digital output pin connected to trigger input of LIDAR-Lite
+------------------------------------------------------------------------------*/
+void LIDARLite_v4LED::takeRangeGpio(uint8_t triggerPin)
+{
+    if (digitalRead(triggerPin))
+        digitalWrite(triggerPin, LOW);
+    else
+        digitalWrite(triggerPin, HIGH);
+} /* LIDARLite_v4LED::takeRangeGpio */
+
+/*------------------------------------------------------------------------------
+  Wait for Busy Flag using Trigger / Monitor Pins
+
+  Blocking function to wait until the Lidar Lite's internal busy flag goes low
+
+  Parameters
+  ------------------------------------------------------------------------------
+  monitorPin: digital input pin connected to monitor output of LIDAR-Lite
+------------------------------------------------------------------------------*/
+void LIDARLite_v4LED::waitForBusyGpio(uint8_t monitorPin)
+{
+    uint8_t  busyFlag;
+
+    do
+    {
+        busyFlag = getBusyFlagGpio(monitorPin);
+    } while (busyFlag);
+
+} /* LIDARLite_v4LED::waitForBusyGpio */
+
+/*------------------------------------------------------------------------------
+  Get Busy Flag using Trigger / Monitor Pins
+
+  Check BUSY status via Monitor pin. Function will return 0x00 if not busy.
+
+  Parameters
+  ------------------------------------------------------------------------------
+  monitorPin: digital input pin connected to monitor output of LIDAR-Lite
+------------------------------------------------------------------------------*/
+uint8_t LIDARLite_v4LED::getBusyFlagGpio(uint8_t monitorPin)
+{
+    uint8_t  busyFlag; // busyFlag monitors when the device is done with a measurement
+
+    // Check busy flag via monitor pin
+    if (digitalRead(monitorPin))
+        busyFlag = 1;
+    else
+        busyFlag = 0;
+
+    return busyFlag;
+} /* LIDARLite_v4LED::getBusyFlagGpio */
+
+/*------------------------------------------------------------------------------
   Read Distance
 
   Read and return the result of the most recent distance measurement.

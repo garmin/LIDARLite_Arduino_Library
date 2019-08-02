@@ -30,11 +30,16 @@ LIDARLite_v4LED myLidarLite;
 
 #define FAST_I2C
 
+#define MonitorPin    3
+#define TriggerPin    2
+
 enum rangeType_T
 {
     RANGE_NONE,
     RANGE_SINGLE,
-    RANGE_CONTINUOUS
+    RANGE_CONTINUOUS,
+    RANGE_SINGLE_GPIO,
+    RANGE_CONTINUOUS_GPIO
 };
 
 void setup()
@@ -74,6 +79,10 @@ void setup()
     // ----------------------------------------------------------------------
     //myLidarLite.configure(0);
     // ----------------------------------------------------------------------
+
+    pinMode(MonitorPin, INPUT);
+    pinMode(TriggerPin, OUTPUT);
+    digitalWrite(TriggerPin, LOW);
 }
 
 
@@ -111,6 +120,14 @@ void loop()
                     break;
 
                 case '3':
+                    rangeMode = RANGE_SINGLE_GPIO;
+                    break;
+
+                case '4':
+                    rangeMode = RANGE_CONTINUOUS_GPIO;
+                    break;
+
+                case '5':
                     rangeMode = RANGE_NONE;
                     dumpCorrelationRecord();
                     break;
@@ -130,7 +147,9 @@ void loop()
                     Serial.println("============================================");
                     Serial.println(" 1 - Single Measurement");
                     Serial.println(" 2 - Continuous Measurement");
-                    Serial.println(" 3 - Dump Correlation Record");
+                    Serial.println(" 3 - Single Measurement using trigger / monitor pins");
+                    Serial.println(" 4 - Continuous Measurement using trigger / monitor pins");
+                    Serial.println(" 5 - Dump Correlation Record");
                     Serial.println(" . - Stop Measurement");
 
                     rangeMode = RANGE_NONE;
@@ -154,6 +173,15 @@ void loop()
 
             case RANGE_CONTINUOUS:
                 newDistance = distanceContinuous(&distance);
+                break;
+
+            case RANGE_SINGLE_GPIO:
+                newDistance = distanceSingleGpio(&distance);
+                rangeMode   = RANGE_NONE;
+                break;
+
+            case RANGE_CONTINUOUS_GPIO:
+                newDistance = distanceContinuousGpio(&distance);
                 break;
 
             default:
@@ -180,18 +208,36 @@ void loop()
 //---------------------------------------------------------------------
 uint8_t distanceSingle(uint16_t * distance)
 {
-    // 1. Wait for busyFlag to indicate device is idle. This must be
-    //    done before triggering a range measurement.
-    myLidarLite.waitForBusy();
-
-    // 2. Trigger range measurement.
+    // 1. Trigger range measurement.
     myLidarLite.takeRange();
 
-    // 3. Wait for busyFlag to indicate device is idle. This should be
-    //    done before reading the distance data that was triggered above.
+    // 2. Wait for busyFlag to indicate device is idle.
     myLidarLite.waitForBusy();
 
-    // 4. Read new distance data from device registers
+    // 3. Read new distance data from device registers
+    *distance = myLidarLite.readDistance();
+
+    return 1;
+}
+
+//---------------------------------------------------------------------
+// Read Single Distance Measurement using Trigger / Monitor Pins
+//
+// This is the simplest form of taking a measurement. This is a
+// blocking function as it will not return until a range has been
+// taken and a new distance measurement can be read. Instead of using
+// the STATUS register to poll for BUSY, this function uses a
+// GPIO pin on the LIDAR-Lite to monitor the BUSY flag.
+//---------------------------------------------------------------------
+uint8_t distanceSingleGpio(uint16_t * distance)
+{
+    // 1. Trigger range measurement.
+    myLidarLite.takeRangeGpio(TriggerPin);
+
+    // 2. Wait for busyFlag to indicate device is idle.
+    myLidarLite.waitForBusyGpio(MonitorPin);
+
+    // 3. Read new distance data from device registers
     *distance = myLidarLite.readDistance();
 
     return 1;
@@ -230,6 +276,38 @@ uint8_t distanceContinuous(uint16_t * distance)
 }
 
 //---------------------------------------------------------------------
+// Read Continuous Distance Measurements using Trigger / Monitor Pins
+//
+// The most recent distance measurement can always be read from
+// device registers. Polling for the BUSY flag using the Monitor Pin
+// can alert the user that the distance measurement is new
+// and that the next measurement can be initiated. If the device is
+// BUSY this function does nothing and returns 0. If the device is
+// NOT BUSY this function triggers the next measurement, reads the
+// distance data from the previous measurement, and returns 1.
+//---------------------------------------------------------------------
+uint8_t distanceContinuousGpio(uint16_t * distance)
+{
+    uint8_t newDistance = 0;
+
+    // Check on busyFlag to indicate if device is idle
+    // (meaning = it finished the previously triggered measurement)
+    if (myLidarLite.getBusyFlagGpio(MonitorPin) == 0)
+    {
+        // Trigger the next range measurement
+        myLidarLite.takeRangeGpio(TriggerPin);
+
+        // Read new distance data from device registers
+        *distance = myLidarLite.readDistance();
+
+        // Report to calling function that we have new data
+        newDistance = 1;
+    }
+
+    return newDistance;
+}
+
+//---------------------------------------------------------------------
 // Print the correlation record for analysis
 //---------------------------------------------------------------------
 void dumpCorrelationRecord()
@@ -246,4 +324,3 @@ void dumpCorrelationRecord()
     }
     Serial.println(" ");
 }
-
