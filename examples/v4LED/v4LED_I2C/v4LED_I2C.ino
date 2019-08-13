@@ -14,6 +14,10 @@
   LIDAR-Lite I2C SDA (pin 3) to Arduino SDA
   LIDAR-Lite I2C SCL (pin 4) to Arduino SCL
 
+  Optional connections to utilize GPIO triggering:
+  LIDAR-Lite GPIOA   (pin 5) to Arduino Digital 2
+  LIDAR-Lite GPIOB   (pin 6) to Arduino Digital 3
+
   (Capacitor recommended to mitigate inrush current when device is enabled)
   680uF capacitor (+) to Arduino 5V
   680uF capacitor (-) to Arduino GND
