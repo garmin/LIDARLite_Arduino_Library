@@ -140,6 +140,12 @@ void loop()
                     rangeMode = RANGE_NONE;
                     break;
 
+                case 'v':
+                case 'V':
+                    rangeMode = RANGE_NONE;
+                    VersionPrint();
+                    break;
+
                 case 0x0D:
                 case 0x0A:
                     rangeMode = RANGE_NONE;
@@ -155,6 +161,7 @@ void loop()
                     Serial.println(" 4 - Continuous Measurement using trigger / monitor pins");
                     Serial.println(" 5 - Dump Correlation Record");
                     Serial.println(" . - Stop Measurement");
+                    Serial.println(" V - Print Version Numbers");
 
                     rangeMode = RANGE_NONE;
                     break;
@@ -327,4 +334,50 @@ void dumpCorrelationRecord()
         Serial.print(",");
     }
     Serial.println(" ");
+}
+
+//---------------------------------------------------------------------
+void VersionPrint(void)
+//---------------------------------------------------------------------
+{
+    uint8_t    dataBytes[12];
+    uint8_t  * nrfVerString;
+    uint16_t * lrfVersion;
+    uint8_t  * hwVersion;
+    uint8_t  i;
+
+    //===========================================
+    // Print nRF Software Version
+    //===========================================
+    myLidarLite.read(0x30, dataBytes, 11, 0x62);
+    nrfVerString = dataBytes;
+    Serial.print("nRF Software Version  - ");
+    for (i=0 ; i<11 ; i++)
+    {
+      Serial.write(nrfVerString[i]);
+    }
+    Serial.println("");
+
+    //===========================================
+    // Print LRF Firmware Version
+    //===========================================
+    myLidarLite.read(0x72, dataBytes, 2, 0x62);
+    lrfVersion = (uint16_t *) dataBytes;
+    Serial.print("LRF Firmware Version  - v");
+    Serial.print((*lrfVersion) / 100);
+    Serial.print(".");
+    Serial.print((*lrfVersion) % 100);
+    Serial.println("");
+
+    //===========================================
+    // Print Hardware Version
+    //===========================================
+    myLidarLite.read(0xE1, dataBytes, 1, 0x62);
+    hwVersion = dataBytes;
+    Serial.print("Hardware Version      - ");
+    switch (*hwVersion)
+    {
+        case 16 : Serial.println("RevA"); break;
+        default : Serial.println("????"); break;
+    }
 }
