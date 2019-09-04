@@ -2,6 +2,7 @@
 
 * [Product Page: LIDAR-Lite v3](https://buy.garmin.com/en-US/US/p/557294) - See product page for operating manual
 * [Product Page: LIDAR-Lite v3HP](https://buy.garmin.com/en-US/US/p/578152) - See product page for operating manual
+* [Product Page: LIDAR-Lite v4 LED](https://buy.garmin.com/en-US/US/p/610275) - See product page for operating manual
 
 This library provides quick access to basic functions of LIDAR-Lite
 via the Arduino interface. Additionally, it can provide a user of any
@@ -30,7 +31,11 @@ This example shows various methods to run LIDAR-Lite v3HP.
 ### v3HP/v3HP_MONITOR
 Use the MODE pin to monitor STATUS of the LIDAR-Lite v3HP.
 
+### v4LED/v4LED_I2C/
+Operation examples for LIDAR-Lite v4 LED.
+
 ## Version History
+* [3.0.0](https://github.com/garmin/LIDARLite_Arduino_Library/tree/3.0.0) - Support for LIDAR-Lite v4 LED
 * [2.0.6](https://github.com/garmin/LIDARLite_Arduino_Library/tree/2.0.6) - Add v3HP library function to reset the reference filter
 * [2.0.5](https://github.com/garmin/LIDARLite_Arduino_Library/tree/2.0.5) - Add v3 library function to set alternate I2C addr
 * [2.0.4](https://github.com/garmin/LIDARLite_Arduino_Library/tree/2.0.4) - Update short-range, high-error configuration
