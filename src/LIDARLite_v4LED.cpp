@@ -199,13 +199,23 @@ uint8_t LIDARLite_v4LED::getBusyFlag(uint8_t lidarliteAddress)
   Parameters
   ------------------------------------------------------------------------------
   triggerPin: digital output pin connected to trigger input of LIDAR-Lite
+  monitorPin: digital input pin connected to monitor output of LIDAR-Lite
 ------------------------------------------------------------------------------*/
-void LIDARLite_v4LED::takeRangeGpio(uint8_t triggerPin)
+void LIDARLite_v4LED::takeRangeGpio(uint8_t triggerPin, uint8_t monitorPin)
 {
+    uint8_t busyFlag;
+
     if (digitalRead(triggerPin))
         digitalWrite(triggerPin, LOW);
     else
         digitalWrite(triggerPin, HIGH);
+
+    // When LLv4 receives trigger command it will drive monitor pin low.
+    // Wait for LLv4 to acknowledge receipt of command before moving on.
+    do
+    {
+        busyFlag = getBusyFlagGpio(monitorPin);
+    } while (!busyFlag);
 } /* LIDARLite_v4LED::takeRangeGpio */
 
 /*------------------------------------------------------------------------------
@@ -395,4 +405,3 @@ void LIDARLite_v4LED::correlationRecordRead(
         correlationArray[i] = correlationValue;
     }
 } /* LIDARLite_v4LED::correlationRecordRead */
-

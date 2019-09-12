@@ -42,7 +42,7 @@ class LIDARLite_v4LED
       void      takeRange   (uint8_t lidarliteAddress = LIDARLITE_ADDR_DEFAULT);
       void      waitForBusyGpio (uint8_t monitorPin);
       uint8_t   getBusyFlagGpio (uint8_t monitorPin);
-      void      takeRangeGpio   (uint8_t triggerPin);
+      void      takeRangeGpio   (uint8_t triggerPin, uint8_t monitorPin);
 
       void      write (uint8_t regAddr, uint8_t * dataBytes, uint8_t numBytes, uint8_t lidarliteAddress = LIDARLITE_ADDR_DEFAULT);
       void      read  (uint8_t regAddr, uint8_t * dataBytes, uint8_t numBytes, uint8_t lidarliteAddress = LIDARLITE_ADDR_DEFAULT);

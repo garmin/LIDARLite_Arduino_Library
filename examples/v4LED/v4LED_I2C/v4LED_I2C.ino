@@ -252,7 +252,7 @@ uint8_t distanceSingle(uint16_t * distance)
 uint8_t distanceSingleGpio(uint16_t * distance)
 {
     // 1. Trigger range measurement.
-    myLidarLite.takeRangeGpio(TriggerPin);
+    myLidarLite.takeRangeGpio(TriggerPin, MonitorPin);
 
     // 2. Wait for busyFlag to indicate device is idle.
     myLidarLite.waitForBusyGpio(MonitorPin);
@@ -315,7 +315,7 @@ uint8_t distanceContinuousGpio(uint16_t * distance)
     if (myLidarLite.getBusyFlagGpio(MonitorPin) == 0)
     {
         // Trigger the next range measurement
-        myLidarLite.takeRangeGpio(TriggerPin);
+        myLidarLite.takeRangeGpio(TriggerPin, MonitorPin);
 
         // Read new distance data from device registers
         *distance = myLidarLite.readDistance();
