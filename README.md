@@ -35,6 +35,7 @@ Use the MODE pin to monitor STATUS of the LIDAR-Lite v3HP.
 Operation examples for LIDAR-Lite v4 LED.
 
 ## Version History
+* [3.0.1](https://github.com/garmin/LIDARLite_Arduino_Library/tree/3.0.1) - v4 LED example clean up and library fixes
 * [3.0.0](https://github.com/garmin/LIDARLite_Arduino_Library/tree/3.0.0) - Support for LIDAR-Lite v4 LED
 * [2.0.6](https://github.com/garmin/LIDARLite_Arduino_Library/tree/2.0.6) - Add v3HP library function to reset the reference filter
 * [2.0.5](https://github.com/garmin/LIDARLite_Arduino_Library/tree/2.0.5) - Add v3 library function to set alternate I2C addr
