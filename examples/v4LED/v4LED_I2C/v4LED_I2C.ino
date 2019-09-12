@@ -92,12 +92,12 @@ void setup()
 
 void loop()
 {
-    uint8_t  firstTime = 1;  // print menu at startup
-
     uint16_t distance;
-    uint8_t  newDistance = 0;
-    uint8_t  c = '?';
+    uint8_t  newDistance;
+    uint8_t  inputChar;
     rangeType_T rangeMode = RANGE_NONE;
+
+    MenuPrint();
 
     // Continuous loop
     while (1)
@@ -105,15 +105,13 @@ void loop()
         //===================================================================
         // 1) Each time through the loop, look for a serial input character
         //===================================================================
-        if ((Serial.available() > 0) || (firstTime))
+        if (Serial.available())
         {
-            firstTime = 0;
-
             //  read input character ...
-            c = (uint8_t) Serial.read();
+            inputChar = (uint8_t) Serial.read();
 
             // ... and parse
-            switch (c)
+            switch (inputChar)
             {
                 case '1':
                     rangeMode = RANGE_SINGLE;
@@ -146,23 +144,14 @@ void loop()
                     VersionPrint();
                     break;
 
+                case ' ':
                 case 0x0D:
                 case 0x0A:
+                    MenuPrint();
                     rangeMode = RANGE_NONE;
                     break;
 
                 default:
-                    Serial.println("============================================");
-                    Serial.println("== LLv4 - Type a single character command ==");
-                    Serial.println("============================================");
-                    Serial.println(" 1 - Single Measurement");
-                    Serial.println(" 2 - Continuous Measurement");
-                    Serial.println(" 3 - Single Measurement using trigger / monitor pins");
-                    Serial.println(" 4 - Continuous Measurement using trigger / monitor pins");
-                    Serial.println(" 5 - Dump Correlation Record");
-                    Serial.println(" . - Stop Measurement");
-                    Serial.println(" V - Print Version Numbers");
-
                     rangeMode = RANGE_NONE;
                     break;
             }
@@ -197,6 +186,7 @@ void loop()
 
             default:
                 newDistance = 0;
+                rangeMode   = RANGE_NONE;
                 break;
         }
 
@@ -208,6 +198,25 @@ void loop()
             Serial.println(distance);
         }
     }
+}
+
+//---------------------------------------------------------------------
+// Menu Print
+//---------------------------------------------------------------------
+void MenuPrint(void)
+{
+    Serial.println("");
+    Serial.println("============================================");
+    Serial.println("== LLv4 - Type a single character command ==");
+    Serial.println("============================================");
+    Serial.println(" 1 - Single Measurement");
+    Serial.println(" 2 - Continuous Measurement");
+    Serial.println(" 3 - Single Measurement using trigger / monitor pins");
+    Serial.println(" 4 - Continuous Measurement using trigger / monitor pins");
+    Serial.println(" 5 - Dump Correlation Record");
+    Serial.println(" . - Stop Measurement");
+    Serial.println(" V - Print Version Numbers");
+    Serial.println("");
 }
 
 //---------------------------------------------------------------------
