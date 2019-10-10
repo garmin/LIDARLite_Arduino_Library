@@ -3,6 +3,7 @@
 * [Product Page: LIDAR-Lite v3](https://buy.garmin.com/en-US/US/p/557294) - See product page for operating manual
 * [Product Page: LIDAR-Lite v3HP](https://buy.garmin.com/en-US/US/p/578152) - See product page for operating manual
 * [Product Page: LIDAR-Lite v4 LED](https://buy.garmin.com/en-US/US/p/610275) - See product page for operating manual
+* [Product Support](https://support.garmin.com) - Please direct any support issues to Garmin's Support Team. They're smart, helpful, and super nice!
 
 This library provides quick access to basic functions of LIDAR-Lite
 via the Arduino interface. Additionally, it can provide a user of any
