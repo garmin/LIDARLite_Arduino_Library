@@ -1,12 +1,20 @@
 /*------------------------------------------------------------------------------
 
   LIDARLite Arduino Library
-  v4LED/v4LED_I2C
+  v4LED/v4LED
 
   This example shows methods for running the LIDAR-Lite v4 LED in various
   modes of operation. To exercise the examples open a serial terminal
   program (or the Serial Monitor in the Arduino IDE) and send ASCII
   characters to trigger the commands. See "loop" function for details.
+
+  *** NOTE ***
+  The LIDAR-Lite v4 LED is strictly a 3.3V system. The Arduino Due is a
+  3.3V system and is recommended for use with the LIDAR-Lite v4 LED.
+  Care MUST be taken if connecting to a 5V system such as the Arduino Uno.
+  See comment block in the setup() function for details on I2C connections.
+  It is recommended to use a voltage level-shifter if connecting the GPIO
+  pins to any 5V system I/O.
 
   Connections:
   LIDAR-Lite 5 VDC   (pin 1) to Arduino 5V
@@ -62,31 +70,45 @@ void setup()
     #endif
 
     // ----------------------------------------------------------------------
-    // The LIDAR-Lite v4 LED is strictly a 3.3V system.
-    // Care MUST be taken if connecting to a 5V system.
-    // Wire.begin() turns on AVR internal pullups on SCL and SDA.
-    // In a 5V system such as the Arduino Uno, they are pulled up to 5V
-    //     risking damage to the LLv4.
-    // To avoid damage, call digitalWrite() to turn off the pullups.
-    // External pullups to 3.3V must then be added to the I2C signals
-    //     if using an Arduino Uno.
-    // On an Arduino Due, there are external 1.5k pullups to 3.3V
+    // The LIDAR-Lite v4 LED is strictly a 3.3V system. The Arduino Due is a
+    // 3.3V system and is recommended for use with the LIDAR-Lite v4 LED.
+    // Care MUST be taken if connecting to a 5V system such as the Arduino Uno.
+    //
+    // I2C is a two wire communications bus that requires a pull-up resistor
+    // on each signal. In the Arduino microcontrollers the Wire.begin()
+    // function (called above) turns on pull-up resistors that pull the I2C
+    // signals up to the system voltage rail. The Arduino Uno is a 5V system
+    // and using the Uno's internal pull-ups risks damage to the LLv4.
+    //
+    // The two digitalWrite() functions (below) turn off the micro's internal
+    // pull-up resistors. This protects the LLv4 from damage via overvoltage
+    // but requires external pullups to 3.3V for the I2C signals.
+    //
+    // External pull-ups are NOT present on the Arduino Uno and must be added
+    // manually to the I2C signals. 3.3V is available on pin 2 of the 6pin
+    // "POWER" connector and can be used for this purpose. See the Uno
+    // schematic for details:
+    // https://www.arduino.cc/en/uploads/Main/arduino-uno-schematic.pdf
+    //
+    // External 1.5k ohm pull-ups to 3.3V are already present on the
+    // Arduino Due. If using the Due no further action is required
     // ----------------------------------------------------------------------
-    //digitalWrite(SCL, LOW);
-    //digitalWrite(SDA, LOW);
-    // ----------------------------------------------------------------------
+    digitalWrite(SCL, LOW);
+    digitalWrite(SDA, LOW);
 
     // ----------------------------------------------------------------------
-    // Optionally configure the LidarLite parameters to lend itself to
-    // various modes of operation by altering 'configure' input integer to
-    // anything in the range of 0 to 5. See LIDARLite_v4LED.cpp for details.
+    // Optional GPIO pin assignments for measurement triggering & monitoring
     // ----------------------------------------------------------------------
-    //myLidarLite.configure(0);
-    // ----------------------------------------------------------------------
-
     pinMode(MonitorPin, INPUT);
     pinMode(TriggerPin, OUTPUT);
     digitalWrite(TriggerPin, LOW);
+
+    // ----------------------------------------------------------------------
+    // Optionally configure the LidarLite parameters to lend itself to
+    // various modes of operation by altering 'configure' input integer.
+    // See LIDARLite_v4LED.cpp for details.
+    // ----------------------------------------------------------------------
+    myLidarLite.configure(0);
 }
 
 
