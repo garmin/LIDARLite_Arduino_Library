@@ -52,6 +52,9 @@ Operation examples for LIDAR-Lite v4 LED.
 ## Raspberry Pi Library for LIDAR-Lite v3
 * [LIDAR-Lite v3 on Pi](https://github.com/garmin/LIDARLite_RaspberryPi_Library/) - Basic support available for Raspberry Pi 3B+
 
+## ANT Library for LIDAR-Lite v4 LED
+* [LIDAR-Lite_ANT_Library](https://github.com/garmin/LIDARLite_ANT_Library/) - Developer library for the nRF52840 powered LIDAR-Lite v4 LED
+
 ## License
 Copyright (c) 2018 Garmin Ltd. or its subsidiaries. Distributed under the Apache 2.0 License.
 See [LICENSE](LICENSE) for further details.
