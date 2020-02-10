@@ -112,6 +112,11 @@ void LIDARLite_v4LED::setI2Caddr (uint8_t newAddress, uint8_t disableDefault,
 {
     uint8_t dataBytes[5];
 
+    // Enable flash storage
+    dataBytes[0] = 0x11;
+    write(0xEA, dataBytes, 1, lidarliteAddress);
+    delay(100);
+
     // Read 4-byte device serial number
     read (0x16, dataBytes, 4, lidarliteAddress);
 
@@ -121,12 +126,23 @@ void LIDARLite_v4LED::setI2Caddr (uint8_t newAddress, uint8_t disableDefault,
     // Write the serial number and new address in one 5-byte transaction
     write(0x16, dataBytes, 5, lidarliteAddress);
 
+    // Wait for the I2C peripheral to be restarted with new device address
+    delay(100);
+
     // If desired, disable default I2C device address (using the new I2C device address)
     if (disableDefault)
     {
         dataBytes[0] = 0x01; // set bit to disable default address
         write(0x1b, dataBytes, 1, newAddress);
+
+        // Wait for the I2C peripheral to be restarted with new device address
+        delay(100);
     }
+
+    // Disable flash storage
+    dataBytes[0] = 0;
+    write(0xEA, dataBytes, 1, newAddress);
+    delay(100);
 } /* LIDARLite_v4LED::setI2Caddr */
 
 /*------------------------------------------------------------------------------
@@ -284,7 +300,7 @@ uint16_t LIDARLite_v4LED::readDistance(uint8_t lidarliteAddress)
 /*------------------------------------------------------------------------------
   Write
 
-  Perform I2C write to device. The I2C peripheral in the LidarLite v3 HP
+  Perform I2C write to device. The I2C peripheral in the LidarLite v4 LED
   will receive multiple bytes in one I2C transmission. The first byte is
   always the register address. The the bytes that follow will be written
   into the specified register address first and then the internal address
@@ -322,13 +338,11 @@ void LIDARLite_v4LED::write(uint8_t regAddr,  uint8_t * dataBytes,
 /*------------------------------------------------------------------------------
   Read
 
-  Perform I2C read from device.  The I2C peripheral in the LidarLite v3 HP
+  Perform I2C read from device.  The I2C peripheral in the LidarLite v4 LED
   will send multiple bytes in one I2C transmission. The register address must
   be set up by a previous I2C write. The bytes that follow will be read
   from the specified register address first and then the internal address
   pointer in the Lidar Lite will be auto-incremented for following bytes.
-
-  Will detect an unresponsive device and report the error over serial.
 
   Parameters
   ------------------------------------------------------------------------------
@@ -347,7 +361,7 @@ void LIDARLite_v4LED::read(uint8_t regAddr,  uint8_t * dataBytes,
     // This single function performs the following actions -
     //     1) I2C START
     //     2) I2C write to set the address
-    //     3) REPEATED START
+    //     3) I2C REPEATED START
     //     4) I2C read to fetch the required data
     //     5) I2C STOP
     Wire.requestFrom
