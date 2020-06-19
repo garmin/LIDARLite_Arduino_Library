@@ -46,6 +46,7 @@ class LIDARLite_v3HP
       void      read  (uint8_t regAddr, uint8_t * dataBytes, uint16_t numBytes, uint8_t lidarliteAddress = LIDARLITE_ADDR_DEFAULT);
 
       void      correlationRecordToSerial (uint16_t numberOfReadings = 1024, uint8_t lidarliteAddress = LIDARLITE_ADDR_DEFAULT);
+      void      peakStackRead(int16_t * peakArray, int16_t * distArray, uint8_t lidarliteAddress = LIDARLITE_ADDR_DEFAULT);
 };
 
 #endif

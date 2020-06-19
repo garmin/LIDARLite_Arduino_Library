@@ -68,6 +68,8 @@ void loop()
     uint8_t  c;
     rangeType_T rangeMode = RANGE_NONE;
 
+    PrintMenu();
+
     // Continuous loop
     while (1)
     {
@@ -105,19 +107,19 @@ void loop()
                     dumpCorrelationRecord();
                     break;
 
+                case 'P':
+                case 'p':
+                    rangeMode = RANGE_NONE;
+                    peakStackExample();
+                    break;
+
                 case 0x0D:
                 case 0x0A:
                     break;
 
                 default:
-                    Serial.println("=====================================");
-                    Serial.println("== Type a single character command ==");
-                    Serial.println("=====================================");
-                    Serial.println(" S - Single Measurement");
-                    Serial.println(" C - Continuous Measurement");
-                    Serial.println(" T - Timed Measurement");
-                    Serial.println(" . - Stop Measurement");
-                    Serial.println(" D - Dump Correlation Record");
+                    rangeMode = RANGE_NONE;
+                    PrintMenu();
                     break;
             }
         }
@@ -158,6 +160,19 @@ void loop()
             rangeMode = RANGE_NONE;
         }
     }
+}
+
+void PrintMenu(void)
+{
+    Serial.println("=====================================");
+    Serial.println("== Type a single character command ==");
+    Serial.println("=====================================");
+    Serial.println(" S - Single Measurement");
+    Serial.println(" C - Continuous Measurement");
+    Serial.println(" T - Timed Measurement");
+    Serial.println(" . - Stop Measurement");
+    Serial.println(" D - Dump Correlation Record");
+    Serial.println(" P - Peak Stack Example");
 }
 
 //---------------------------------------------------------------------
@@ -251,5 +266,34 @@ uint8_t distanceFast(uint16_t * distance)
 void dumpCorrelationRecord()
 {
     myLidarLite.correlationRecordToSerial(256);
+}
+
+//---------------------------------------------------------------------
+// Print peaks and calculated distances from the peak stack
+//---------------------------------------------------------------------
+void peakStackExample()
+{
+    int16_t   peakArray[8];
+    int16_t   distArray[8];
+    uint8_t   i;
+
+    // - Read the Peak Stack.
+    // - Peaks and calculated distances are returned in local arrays.
+    // - See library function for details on the makeup of the stack
+    //   and how distance data is created from the stack.
+    myLidarLite.peakStackRead(peakArray, distArray);
+
+    // Print peaks and calculated distances to the serial port.
+    Serial.println();
+    Serial.println("IDX PEAK DIST");
+    for (i=0 ; i<8 ; i++)
+    {
+        Serial.print(i);
+        Serial.print("   ");
+        Serial.print(peakArray[i]);
+        Serial.print("  ");
+        Serial.print(distArray[i]);
+        Serial.println();
+    }
 }
 

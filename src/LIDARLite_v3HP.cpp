@@ -434,7 +434,6 @@ void LIDARLite_v3HP::read(uint8_t regAddr, uint8_t * dataBytes,
 
   Parameters
   ------------------------------------------------------------------------------
-  separator: the separator between serial data words
   numberOfReadings: Default: 1024. Maximum of 1024
   lidarliteAddress: Default 0x62. Fill in new address here if changed. See
     operating manual for instructions.
@@ -470,3 +469,104 @@ void LIDARLite_v3HP::correlationRecordToSerial(
     dataBytes[0] = 0;
     write(0x40, dataBytes, 1, lidarliteAddress);
 } /* LIDARLite_v3HP::correlationRecordToSerial */
+
+/*------------------------------------------------------------------------------
+  Correlation Peak Stack Read
+
+  Following a distance measurement, the correlation record is searched and a peak
+  stack table is built. The nine total entries in the peak stack table are
+  readable via registers, as illustrated below. This function reads all stack
+  entries, calculates distances from those entries, and then returns arrays
+  containing the peak magnitudes and associated distances.
+
+  - The first stack entry represents internal reference measurement data.
+  - The next eight entries represent the largest peaks in the correlation record.
+      - The eight range entries are sorted largest peak to smallest peak.
+      - The first of these eight entries is assumed to be the intended target
+        and is used to calculate the distance data stored in I2C registers.
+      - The remaining entries most often represent system noise.
+
+  Each stack entry is comprised of three 16-bit values (6 total bytes)
+      1st value = Peak Strength (Magnitude of Peak)
+      2nd value = Zero crossing address (Coarse Distance)
+      3rd value = Interpolated value (Fine Distance)
+
+  Note: There are calibration and compensation circuits not available
+        outside the LIDAR-Lite system, but the following shows how to
+        quickly extract multiple signatures from the correlation results.
+        Using this method does not result in data that matches the
+        device distance registers exactly, but it is representative.
+
+  Note: Using this method, some negative distances can be produced
+        if noise artifacts exist very early in the correlation record.
+        This is normal. Any negative distances should be ignored.
+
+  Note: LIDAR-Lite must be idle (not BUSY) in order to perform this function.
+
+  Process
+  ------------------------------------------------------------------------------
+  1.  Take a distance reading (there is no peak stack data available before
+      at least one distance reading is performed)
+  2.  Read stack entries
+
+  Parameters
+  ------------------------------------------------------------------------------
+  peakArray: Pointer to an array of eight 16-bit unsigned data values
+             for storing the Peak Strengths (Magnitude) from the stack
+  distArray: Pointer to an array of eight 16-bit unsigned data values
+             for storing the effective distance associated with each peak
+  lidarliteAddress: Default 0x62. Fill in the new address here if changed. See
+    operating manual for instructions.
+------------------------------------------------------------------------------*/
+void LIDARLite_v3HP::peakStackRead(
+    int16_t * peakArray, int16_t * distArray, uint8_t lidarliteAddress)
+{
+    #define RECORD_OFFSET ((63*18) + 1)
+    #define FREQ_ADJUST   (1.067)
+
+    uint8_t   idx;
+    uint8_t   dataBytes[2];
+    int16_t   peakVal;
+    int16_t   coarseDist;  // Zero crossing address (Coarse Distance)
+    int16_t   fineDist; // Interpolated value (Fine Distance)
+    int16_t   LLref;
+    int16_t   LLtarget;
+
+    // Reset the peak stack internal address pointer
+    dataBytes[0] = 1;
+    write(0x26, dataBytes, 1, lidarliteAddress);
+
+    // Each time through the loop read one peak stack "entry."
+    // First time through the loop always retrieves reference data entry.
+    for (idx = 0 ; idx < 9 ; idx++)
+    {
+        // *** Read "Peak Strength"
+        read(0x26, dataBytes, 2, lidarliteAddress);
+        peakVal    = (int16_t) ((dataBytes[0] << 8) + dataBytes[1]);
+
+        // *** Read "Zero Crossing Address"
+        read(0x26, dataBytes, 2, lidarliteAddress);
+        coarseDist = (int16_t) ((dataBytes[0] << 8) + dataBytes[1]);
+
+        // *** Read "Interpolated Value"
+        read(0x26, dataBytes, 2, lidarliteAddress);
+        fineDist   = (int16_t) ((dataBytes[0] << 8) + dataBytes[1]);
+
+        // ---------- Calculate distance from peak stack data -------------
+
+        LLtarget = (coarseDist * 18) + fineDist;
+
+        // The first entry in the peak stack contains reference data
+        if (idx == 0)
+            LLref  = LLtarget;
+
+        // The remaining eight entries contain data corresponding to the
+        // eight largest peaks in the correlation record
+        if (idx != 0)
+        {
+            peakArray[idx-1] = peakVal;
+            distArray[idx-1] = ((LLtarget - RECORD_OFFSET) - LLref) * FREQ_ADJUST;
+        }
+    }
+} /* LIDARLite_v3HP::peakStackRead */
+
