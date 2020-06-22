@@ -36,6 +36,7 @@ Use the MODE pin to monitor STATUS of the LIDAR-Lite v3HP.
 Operation examples for LIDAR-Lite v4 LED.
 
 ## Version History
+* [3.0.3](https://github.com/garmin/LIDARLite_Arduino_Library/tree/3.0.3) - Add v3HP library function to read peak stack
 * [3.0.2](https://github.com/garmin/LIDARLite_Arduino_Library/tree/3.0.2) - Add v4 LED examples and link to ANT Library
 * [3.0.1](https://github.com/garmin/LIDARLite_Arduino_Library/tree/3.0.1) - v4 LED example clean up and library fixes
 * [3.0.0](https://github.com/garmin/LIDARLite_Arduino_Library/tree/3.0.0) - Support for LIDAR-Lite v4 LED
