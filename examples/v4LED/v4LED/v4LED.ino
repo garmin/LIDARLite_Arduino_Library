@@ -409,6 +409,7 @@ void VersionPrint(void)
     switch (*hwVersion)
     {
         case 16 : Serial.println("RevA"); break;
+        case  8 : Serial.println("RevB"); break;
         default : Serial.println("????"); break;
     }
 }
