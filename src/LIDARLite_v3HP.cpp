@@ -336,12 +336,12 @@ void LIDARLite_v3HP::resetReferenceFilter(uint8_t lidarliteAddress)
   lidarliteAddress: Default 0x62. Fill in new address here if changed. See
     operating manual for instructions.
 ------------------------------------------------------------------------------*/
-void LIDARLite_v3HP::write(uint8_t regAddr, uint8_t * dataBytes,
-                           uint16_t numBytes, uint8_t lidarliteAddress)
+void LIDARLite_v3HP::write(uint8_t regAddr,  uint8_t * dataBytes,
+                           uint8_t numBytes, uint8_t lidarliteAddress)
 {
-    int nackCatcher;
+    uint8_t nackCatcher;
 
-    Wire.beginTransmission((int) lidarliteAddress);
+    Wire.beginTransmission(lidarliteAddress);
 
     // Wire.write Syntax
     // -----------------------------------------------------------------
@@ -350,14 +350,13 @@ void LIDARLite_v3HP::write(uint8_t regAddr, uint8_t * dataBytes,
     // Wire.write(data, length)  - an array of data to send as bytes
 
     // First byte of every write sets the LidarLite's internal register address pointer
-    Wire.write((int) regAddr);
+    Wire.write(regAddr);
 
     // Subsequent bytes are data writes
-    Wire.write(dataBytes, (int) numBytes);
+    Wire.write(dataBytes, numBytes);
 
     // A nack means the device is not responding. Report the error over serial.
-    nackCatcher = Wire.endTransmission();
-    if (nackCatcher != 0)
+    if ( Wire.endTransmission() )
     {
         Serial.println("> nack");
     }
@@ -384,34 +383,34 @@ void LIDARLite_v3HP::write(uint8_t regAddr, uint8_t * dataBytes,
   lidarliteAddress: Default 0x62. Fill in new address here if changed. See
     operating manual for instructions.
 ------------------------------------------------------------------------------*/
-void LIDARLite_v3HP::read(uint8_t regAddr, uint8_t * dataBytes,
-                          uint16_t numBytes, uint8_t lidarliteAddress)
+void LIDARLite_v3HP::read(uint8_t regAddr,  uint8_t * dataBytes,
+                          uint8_t numBytes, uint8_t lidarliteAddress)
 {
-    uint16_t i = 0;
-    int nackCatcher = 0;
+    // This single function performs the following actions -
+    //     1) I2C START
+    //     2) I2C write to set the address
+    //     3) I2C REPEATED START
+    //     4) I2C read to fetch the required data
+    //     5) I2C STOP
+    Wire.requestFrom
+    (
+        lidarliteAddress, // Slave address
+        numBytes,         // number of consecutive bytes to read
+        regAddr,          // address of first register to read
+        1,                // number of bytes in regAddr
+        true              // true = set STOP condition following I2C read
+    );
 
-    // Set the internal register address pointer in the Lidar Lite
-    Wire.beginTransmission((int) lidarliteAddress);
-    Wire.write((int) regAddr); // Set the register to be read
+    uint8_t  numHere = Wire.available();
+    uint8_t  i       = 0;
 
-    // A nack means the device is not responding, report the error over serial
-    nackCatcher = Wire.endTransmission(false); // false means perform repeated start
-    if (nackCatcher != 0)
+    while (i < numHere)
     {
-        Serial.println("> nack");
+        dataBytes[i] = Wire.read();
+        i++;
     }
 
-    // Perform read, save in dataBytes array
-    Wire.requestFrom((int)lidarliteAddress, (int) numBytes);
-    if ((int) numBytes <= Wire.available())
-    {
-        while (i < numBytes)
-        {
-            dataBytes[i] = (uint8_t) Wire.read();
-            i++;
-        }
-    }
-
+    delayMicroseconds(100); // 100 us delay for robustness with successive reads and writes
 } /* LIDARLite_v3HP::read */
 
 /*------------------------------------------------------------------------------
