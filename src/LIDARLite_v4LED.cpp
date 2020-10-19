@@ -317,15 +317,15 @@ uint16_t LIDARLite_v4LED::readDistance(uint8_t lidarliteAddress)
 void LIDARLite_v4LED::write(uint8_t regAddr,  uint8_t * dataBytes,
                             uint8_t numBytes, uint8_t lidarliteAddress)
 {
-    int nackCatcher;
+    uint8_t nackCatcher;
 
-    Wire.beginTransmission((int) lidarliteAddress);
+    Wire.beginTransmission(lidarliteAddress);
 
     // First byte of every write sets the LidarLite's internal register address pointer
-    Wire.write((int) regAddr);
+    Wire.write(regAddr);
 
     // Subsequent bytes are data writes
-    Wire.write(dataBytes, (int) numBytes);
+    Wire.write(dataBytes, numBytes);
 
     // A nack means the device is not responding. Report the error over serial.
     nackCatcher = Wire.endTransmission();
