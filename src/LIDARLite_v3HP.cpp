@@ -339,8 +339,6 @@ void LIDARLite_v3HP::resetReferenceFilter(uint8_t lidarliteAddress)
 void LIDARLite_v3HP::write(uint8_t regAddr,  uint8_t * dataBytes,
                            uint8_t numBytes, uint8_t lidarliteAddress)
 {
-    uint8_t nackCatcher;
-
     Wire.beginTransmission(lidarliteAddress);
 
     // Wire.write Syntax
