@@ -373,6 +373,35 @@ void LIDARLite_v3HP::write(uint8_t regAddr,  uint8_t * dataBytes,
 
   Will detect an unresponsive device and report the error over serial.
 
+    // **************************************************************
+    // If you are here because compilation fails trying to feed five
+    // parameters to "requestFrom" it could be because your
+    // processor does not include support for all versions of the
+    // overloaded function in it's implementation of the Wire library.
+    // The five parameter function appears to be necessary to
+    // stabalize the Arduino Due and help it perform repeated starts.
+    // See LEGACY_I2C below for an alternate implementation.
+    // **************************************************************
+    // In order to use the documented version of requestFrom() with
+    // fewer parameters, you can copy this code and create your
+    // own library, or you may define LEGACY_I2C in your application
+    // and use this library. The recommended way to do this is to use
+    // the -D compiler option.
+    //
+    // 1) Find the platform directory pointed to by your Arduino IDE
+    //    - This will typically be in the Programs (x86) directory
+    //      or in your user directory under AppData in Windows.
+    //    - To get help locating it, turn on verbose compiler output
+    //      in the Arduino IDE in File->Preferences. The next output
+    //      will show "Using board '????' from platform in folder ..."
+    // 2) Under that directory tree will be a "platform.txt" file
+    //    which defines your board and system.
+    //    - Along side that text file, create a new text file called
+    //      "platform.local.txt" (without the quotes)
+    // 3) Inside "platform.local.txt" add only the following line of text
+    //    build.extra_flags=-DLEGACY_I2C
+    // **************************************************************
+
   Parameters
   ------------------------------------------------------------------------------
   regAddr:   register address to write to
@@ -384,12 +413,38 @@ void LIDARLite_v3HP::write(uint8_t regAddr,  uint8_t * dataBytes,
 void LIDARLite_v3HP::read(uint8_t regAddr,  uint8_t * dataBytes,
                           uint8_t numBytes, uint8_t lidarliteAddress)
 {
+
+#ifdef LEGACY_I2C
+
+    #define SEND_STOP ((uint8_t) true)
+    #define DONT_STOP ((uint8_t) false)
+
+    Wire.beginTransmission(lidarliteAddress);
+    Wire.write(regAddr);
+
+    // A nack means the device is not responding, report the error over serial
+    if (Wire.endTransmission(DONT_STOP)) // performs repeated start
+    {
+        Serial.println("> nack");
+    }
+
+    // Perform read, save in dataBytes array
+    Wire.requestFrom(lidarliteAddress, numBytes, SEND_STOP);
+
+#else
+
     // This single function performs the following actions -
     //     1) I2C START
     //     2) I2C write to set the address
     //     3) I2C REPEATED START
     //     4) I2C read to fetch the required data
     //     5) I2C STOP
+
+    // **************************************************************
+    // If you are here because compilation fails trying to feed five
+    // parameters to "requestFrom" see function header comments above
+    // **************************************************************
+
     Wire.requestFrom
     (
         lidarliteAddress, // Slave address
@@ -398,6 +453,8 @@ void LIDARLite_v3HP::read(uint8_t regAddr,  uint8_t * dataBytes,
         1,                // number of bytes in regAddr
         true              // true = set STOP condition following I2C read
     );
+
+#endif
 
     uint8_t  numHere = Wire.available();
     uint8_t  i       = 0;
