@@ -45,6 +45,7 @@ High rep rate example using the optional GPIO pins or I2C port to trigger measur
 Take single distance measurements using the I2C port in a lower power state.
 
 ## Version History
+* [3.0.6](https://github.com/garmin/LIDARLite_Arduino_Library/tree/3.0.6) - Copy alt requestFrom() to LLv4LED library
 * [3.0.5](https://github.com/garmin/LIDARLite_Arduino_Library/tree/3.0.5) - v3HP library updated for alternate requestFrom()
 * [3.0.4](https://github.com/garmin/LIDARLite_Arduino_Library/tree/3.0.4) - v4 LED and v3HP library updates. New v3HP PWM example.
 * [3.0.3](https://github.com/garmin/LIDARLite_Arduino_Library/tree/3.0.3) - Add v3HP library function to read peak stack
