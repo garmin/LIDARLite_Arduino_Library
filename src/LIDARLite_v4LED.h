@@ -25,6 +25,8 @@
 #ifndef LIDARLite_v4LED_h
 #define LIDARLite_v4LED_h
 
+#define LEGACY_I2C             1 
+
 #define LIDARLITE_ADDR_DEFAULT 0x62
 
 #include <Arduino.h>
@@ -33,6 +35,8 @@
 class LIDARLite_v4LED
 {
   public:
+                LIDARLite_v4LED();
+                LIDARLite_v4LED(TwoWire *port);
       void      configure   (uint8_t configuration = 0, uint8_t lidarliteAddress = LIDARLITE_ADDR_DEFAULT);
 
       void      setI2Caddr  (uint8_t newAddress, uint8_t disableDefault, uint8_t lidarliteAddress = LIDARLITE_ADDR_DEFAULT);
@@ -48,6 +52,8 @@ class LIDARLite_v4LED
       void      read  (uint8_t regAddr, uint8_t * dataBytes, uint8_t numBytes, uint8_t lidarliteAddress = LIDARLITE_ADDR_DEFAULT);
 
       void      correlationRecordRead (int16_t * correlationArray, uint8_t numberOfReadings = 192, uint8_t lidarliteAddress = LIDARLITE_ADDR_DEFAULT);
+  private:
+      TwoWire *i2cPort;
 };
 
 #endif

@@ -30,6 +30,32 @@
 #include "LIDARLite_v4LED.h"
 
 /*------------------------------------------------------------------------------
+  Constructor
+
+  Default constructor, the object will use the default Wire object.
+
+  Parameters
+  ------------------------------------------------------------------------------
+  None
+------------------------------------------------------------------------------*/
+LIDARLite_v4LED::LIDARLite_v4LED(){
+    i2cPort = &Wire;
+}
+
+/*------------------------------------------------------------------------------
+  Constructor
+
+  Constructor used to point the I2C communication to another TwoWire object
+
+  Parameters
+  ------------------------------------------------------------------------------
+  port: TwoWire pointer, it can be use to select wich I2C port will be used.
+------------------------------------------------------------------------------*/
+LIDARLite_v4LED::LIDARLite_v4LED(TwoWire *port){
+    i2cPort = port;
+}
+
+/*------------------------------------------------------------------------------
   Configure
 
   Selects one of several preset configurations.
@@ -319,16 +345,16 @@ void LIDARLite_v4LED::write(uint8_t regAddr,  uint8_t * dataBytes,
 {
     uint8_t nackCatcher;
 
-    Wire.beginTransmission(lidarliteAddress);
+    i2cPort->beginTransmission(lidarliteAddress);
 
     // First byte of every write sets the LidarLite's internal register address pointer
-    Wire.write(regAddr);
+    i2cPort->write(regAddr);
 
     // Subsequent bytes are data writes
-    Wire.write(dataBytes, numBytes);
+    i2cPort->write(dataBytes, numBytes);
 
     // A nack means the device is not responding. Report the error over serial.
-    nackCatcher = Wire.endTransmission();
+    nackCatcher = i2cPort->endTransmission();
     if (nackCatcher != 0)
     {
         // handle nack issues in here
@@ -390,17 +416,17 @@ void LIDARLite_v4LED::read(uint8_t regAddr,  uint8_t * dataBytes,
     #define SEND_STOP ((uint8_t) true)
     #define DONT_STOP ((uint8_t) false)
 
-    Wire.beginTransmission(lidarliteAddress);
-    Wire.write(regAddr);
+    i2cPort->beginTransmission(lidarliteAddress);
+    i2cPort->write(regAddr);
 
     // A nack means the device is not responding, report the error over serial
-    if (Wire.endTransmission(DONT_STOP)) // performs repeated start
+    if (i2cPort->endTransmission(DONT_STOP)) // performs repeated start
     {
         Serial.println("> nack");
     }
 
     // Perform read, save in dataBytes array
-    Wire.requestFrom(lidarliteAddress, numBytes, SEND_STOP);
+    i2cPort->requestFrom(lidarliteAddress, numBytes, SEND_STOP);
 
 #else
 
@@ -416,7 +442,7 @@ void LIDARLite_v4LED::read(uint8_t regAddr,  uint8_t * dataBytes,
     // parameters to "requestFrom" see function header comments above
     // **************************************************************
 
-    Wire.requestFrom
+    i2cPort->requestFrom
     (
         lidarliteAddress, // Slave address
         numBytes,         // number of consecutive bytes to read
@@ -427,12 +453,12 @@ void LIDARLite_v4LED::read(uint8_t regAddr,  uint8_t * dataBytes,
 
 #endif
 
-    uint8_t   numHere = Wire.available();
+    uint8_t   numHere = i2cPort->available();
     uint8_t   i       = 0;
 
     while (i < numHere)
     {
-        dataBytes[i] = Wire.read();
+        dataBytes[i] = i2cPort->read();
         i++;
     }
 
