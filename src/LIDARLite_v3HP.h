@@ -25,6 +25,8 @@
 #ifndef LIDARLite_v3HP_h
 #define LIDARLite_v3HP_h
 
+#define LEGACY_I2C             1 
+
 #define LIDARLITE_ADDR_DEFAULT 0x62
 
 #include <Arduino.h>
